@@ -13,17 +13,17 @@ Deep dives into AI-powered products I've designed and built. Each page explains 
 
 | Project | What it does | Core idea | Reported results | My role |
 |---|---|---|---|---|
-| [**AI Cloud Migrator**](projects/ai-cloud-migrator.md) | Recommends a cloud migration strategy per application, aligned to the organisation's goals | Deterministic rules first, a constrained LLM for the grey areas, then a transparent scoring layer | 60% shorter assessment phase, 50% fewer resources | Product Manager and AI/Technical Lead, leading an engineer and a cloud architect |
-| [**Property Visual Finder**](projects/property-visual-finder.md) | Scores property listings from their photos so they can be filtered and ranked by visual features | Closed-question visual analysis, with certainty-aware aggregation across 330k+ images | 17% less time on mismatched properties (UK agency) | Product Manager and AI/Technical Lead, leading two engineers |
-| [**Relationships Mapping Visualiser**](projects/relationships-mapping-visualiser.md) | Turns unstructured interview notes into an editable diagram of how teams and tools interact | The LLM extracts; strict validation and code build the diagram; a human fixes the rest | 80% less time creating the diagram, 15% less overall assessment time | Sole builder |
+| [**AI Cloud Migrator**](projects/ai-cloud-migrator-technical-deep-dive.md) | Recommends a cloud migration strategy per application, aligned to the organisation's goals | Deterministic rules first, a constrained LLM for the grey areas, then a transparent scoring layer | 60% shorter assessment phase, 50% fewer resources | Product Manager and AI/Technical Lead, leading an engineer and a cloud architect |
+| [**Property Visual Finder**](projects/property-visual-finder-technical-deep-dive.md) | Scores property listings from their photos so they can be filtered and ranked by visual features | Closed-question visual analysis, with certainty-aware aggregation across 330k+ images | 17% less time on mismatched properties (UK agency) | Product Manager and AI/Technical Lead, leading two engineers |
+| [**Relationships Mapping Visualiser**](projects/relationships-maping-visualiser-technical-deep-dive.md) | Turns unstructured interview notes into an editable diagram of how teams and tools interact | The LLM extracts; strict validation and code build the diagram; a human fixes the rest | 80% less time creating the diagram, 15% less overall assessment time | Sole builder |
 
 ### Experiments and research
 
 | Project | What it does | Core idea | Outcome | My role |
 |---|---|---|---|---|
-| [**Product Work Focus Tool**](projects/product-work-focus-tool.md) | Prioritises product work against a strategy and generates an indicative delivery plan | LLM as a constrained classifier inside a deterministic, PM-controlled framework | Up to 50% faster prioritisation in early testing; became the foundation of an AI product platform at work | Technical Lead and Product Manager |
-| [**News Titles Shift**](projects/news-titles-shift.md) | Rewrites live headlines for a reader profile, then shows exactly how it did it | Make persuasion legible: manipulated, neutral and annotated versions side by side | A working demonstration of personalised persuasion | Sole builder |
-| [**Agents Duo**](projects/agents-duo.md) | Two language models hold an open-ended conversation with configurable personalities | A small, well-instrumented harness for studying model-to-model interaction | Observations on style drift and self-directed topics | Sole builder |
+| [**Product Work Focus Tool**](projects/product-work-focus-tool-technical-deep-dive.md) | Prioritises product work against a strategy and generates an indicative delivery plan | LLM as a constrained classifier inside a deterministic, PM-controlled framework | Up to 50% faster prioritisation in early testing; became the foundation of an AI product platform at work | Technical Lead and Product Manager |
+| [**News Titles Shift**](projects/news-titles-shift-technical-deep-dive.md) | Rewrites live headlines for a reader profile, then shows exactly how it did it | Make persuasion legible: manipulated, neutral and annotated versions side by side | A working demonstration of personalised persuasion | Sole builder |
+| [**Agents Duo**](projects/agents-duo-technical-deep-dive.md) | Two language models hold an open-ended conversation with configurable personalities | A small, well-instrumented harness for studying model-to-model interaction | Observations on style drift and self-directed topics | Sole builder |
 
 ---
 
