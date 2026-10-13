@@ -139,6 +139,6 @@ Consultants assess a whole estate at once from a CSV template.
 Reported from pilot deployments with consulting partners: **~60% reduction in assessment-phase duration** and **~50% reduction in resource demand**.
 Details and context: [website case study](https://filbezerianos.com/portfolio/cloud-migration-strategy-ai-tool/).
 
-## My role
+# My role
 
 Product Manager and AI/Technical Lead. I designed the decision logic, prompt and validation strategy, and scoring model, and led the engineer and cloud architect who built and validated it with consulting partners.

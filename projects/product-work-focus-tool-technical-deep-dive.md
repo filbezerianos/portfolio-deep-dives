@@ -158,6 +158,6 @@ It is deliberately an *indicative* plan: no dependencies, skills or per-person c
 
 Details: [website case study](https://filbezerianos.com/portfolio/product-work-focus-tool/).
 
-## My role
+# My role
 
 Technical Lead and Product Manager. I designed the prioritisation framework, the prompt and schema strategy, and the scoring model, and built the application.

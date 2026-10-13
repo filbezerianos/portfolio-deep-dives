@@ -147,6 +147,6 @@ From testing across multiple reader profiles and topics: `[CONFIRM: method, numb
 
 Full narrative: [website case study](https://filbezerianos.com/portfolio/news-titles-shift/).
 
-## My role
+# My role
 
 Sole builder: profile framework design, prompt engineering, application architecture and interface.

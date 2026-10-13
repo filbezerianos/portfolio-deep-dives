@@ -145,6 +145,6 @@ A personal project with no commercial deployment. Its value is as a small, well-
 
 Details: [website case study](https://filbezerianos.com/portfolio/agents-duo/).
 
-## My role
+# My role
 
 Sole builder: conversation architecture, prompt and personality design, and the interface.

@@ -151,6 +151,6 @@ An internal Streamlit tool shows sampled images in an editable grid with per-que
 
 Details: [website case study](https://filbezerianos.com/portfolio/ai-powered-property-photo-analyser/).
 
-## My role
+# My role
 
 Product Manager and AI/Technical Lead. I designed the feature taxonomy, the question set, the certainty and scoring logic, and the evaluation tooling, and led two engineers on implementation.
