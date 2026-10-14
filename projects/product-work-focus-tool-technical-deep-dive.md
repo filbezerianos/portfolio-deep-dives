@@ -1,8 +1,6 @@
 # Product Work Focus Tool: Technical Deep Dive
 
-I built this to answer one question: can an AI help a Product Manager prioritise against *their* strategy, without giving up control of the answer?
-
-The design splits the work. A local language model reads the strategy, proposes the prioritisation dimensions and assesses each item against them with a written rationale. Plain code then turns those judgements into a priority from P1 to P4, the same way every time. The Product Manager can edit every step. The ideas became the foundation of an AI product platform I built at work, which lets the team take on more products without growing in step.
+My goal was to help a Product Manager prioritise against *their* strategy. The design of the solution splits the work. A local language model reads the strategy, proposes the prioritisation dimensions and assesses each item against them with a written rationale. Plain code then turns those judgements into a priority from P1 to P4, the same way every time. The Product Manager can edit every step. The ideas became the foundation of an AI product platform I built at work, which lets the team take on more products without growing in step.
 
 **My role:** Technical Lead and Product Manager. I designed the prioritisation framework, the prompt and schema strategy and the scoring model, and built the application.
 
@@ -64,12 +62,14 @@ flowchart TD
 # Deriving the framework from the strategy
 
 ## Summarise first, reason second
+
 The uploaded PDF is turned into a **bounded, plain-text summary** (4,000-character cap, fixed structure, no editorialising). Every later call uses this summary rather than the raw document, which gives:
 - a **small, stable context** for each downstream call (important for an 8B model);
 - a **human-readable, editable** artefact: the PM can correct the summary and everything downstream follows;
 - a **validity guard**: if the input isn't clearly a strategy or vision document, the model must return a fixed sentinel, and the app rejects it instead of building a framework from the wrong text.
 
 ## Generate exactly five dimensions
+
 The model proposes five dimensions (name plus a short description) under explicit constraints: aligned to the strategy, **distinct and non-overlapping**, assessable at feature level, and **not invented beyond the input**. Output is JSON-schema constrained, so the app never parses free text.
 
 The Product Manager can **edit, rename or replace** any dimension and save. Generated dimensions are a starting point, not an answer.

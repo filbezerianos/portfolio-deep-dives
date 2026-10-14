@@ -1,6 +1,10 @@
 # Agents Duo: Technical Deep Dive
 
-> A local-first experiment in which two language models hold an open-ended conversation with each other. Each agent has a configurable personality, and no human steers the dialogue after the setup. A live monitor shows per-turn latency, token usage and effective temperature, and every conversation is saved for replay. **Source code is private.** This page documents the architecture and design decisions. [The idea and what I observed on filbezerianos.com](https://filbezerianos.com/portfolio/agents-duo/)
+This is a local-first experiment. Two models hold an open-ended conversation. Each has a configurable personality, and no one steers the dialogue after the setup. A live monitor shows per-turn latency, token usage and effective temperature, and every conversation is saved for replay, so it works as an experiment and not just a demo. I noticed two things, a drift in tone between the agents and conversations that built on themselves, and I have tried to say honestly what I do and don't know about both.
+
+**My role:** sole builder. I designed the conversation architecture, the prompts and personality model, and the interface. It is a personal project with no commercial deployment.
+
+> **Source code is private.** This page documents the architecture and the decisions behind it. [The idea and what I observed on filbezerianos.com](https://filbezerianos.com/portfolio/agents-duo/)
 
 ![Python](https://img.shields.io/badge/Python-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![LM Studio](https://img.shields.io/badge/LM%20Studio-purple) ![LLM](https://img.shields.io/badge/LLM-Llama-green) ![LLM](https://img.shields.io/badge/LLM-Gemma-green)
 
@@ -70,6 +74,7 @@ Five traits, each with five levels:
 Each level is a **named behaviour description** that is injected into the agent's system prompt. Sliders are the whole interface, and prompts are never edited by hand, so personalities are reproducible and comparable.
 
 ## Traits also move the sampling temperature
+
 Three of the five traits are expressive in a way that sampling temperature reinforces. They are combined into one effective temperature:
 
 ```text
@@ -112,22 +117,22 @@ Politeness and formality change only the prompt. The result is that a personalit
 - Because the API surface is the standard chat-completions interface, switching models or pointing at a hosted endpoint is a configuration change.
 - It makes long, expensive-by-default experiments (hundreds of turns) practical.
 
-# Observations, and how I'd test them properly
+# What I observed
 
-The experiment was exploratory, not controlled. The two things I noticed:
+The experiment was exploratory, not controlled.
 
-**1. Style drift between agents.** Over long runs, one agent's tone began to track the other's. In one saved run, a formal agent that started with almost no exclamation marks or emoji ended up using about a dozen exclamation marks and ten emoji per message, matching its partner.
+**1. Style drift between agents.** Over long runs, Gemma's tone began to shape Llama's. In one saved run, a formal agent that started with almost no exclamation marks or emoji ended up using about a dozen exclamation marks and ten emoji per message, matching its partner.
 
 A plausible mechanism, not a proven one:
 - each agent receives the other's messages as *user* turns, and chat-tuned models tend to adapt to the register of the person they are talking to;
 - as the history grows, the fixed system prompt becomes a smaller part of the context, so the conversation's own style outweighs the instructions.
 
-How to test it:
+How I would test it:
 - swap the models' seats and starting order;
 - re-inject the personality prompt periodically, or cap the history with a sliding window, and see whether drift disappears;
 - measure drift with simple style metrics per turn (sentence length, exclamation and emoji rate, formality) plus embedding similarity between the two agents' messages.
 
-**2. Self-directed topics.** With `Random`, conversations built on earlier threads, changed register and sometimes returned to previous ideas. This is consistent with each agent conditioning on a full, growing history; whether it counts as "agency" is a philosophical question that the experiment doesn't settle.
+**2. Self-directed topics.** With `Random`, conversations built on earlier threads, changed register and sometimes returned to previous ideas. This is consistent with each agent conditioning on a full, growing history. Whether it counts as "agency" is a philosophical question that the experiment doesn't settle, and I would not claim it does.
 
 # Engineering trade-offs
 
@@ -139,12 +144,10 @@ How to test it:
 | Token budget as the stop condition | Prevents context overflow on small models | Ends runs by resource limits, not by conversational convergence |
 | Markdown transcripts | Human-readable, zero infrastructure | Easy to read but not easy to query |
 
-# Outcome
+# What I took from it
 
-A personal project with no commercial deployment. Its value is as a small, well-instrumented harness for studying model-to-model interaction, and as a way to learn how personality prompts, sampling and context growth interact.
+Agents Duo stayed a personal experiment, and its value is as a small, well-instrumented harness for studying model-to-model interaction.
 
-Details: [website case study](https://filbezerianos.com/portfolio/agents-duo/).
+The lesson I use in product work is the mechanism behind the drift, if it holds: instructions fixed at the start compete with a growing conversation. Any product with long-running agents, or agents talking to other agents, faces the same pressure, and needs a way to re-anchor instructions and to measure drift instead of assuming it away. That is why I kept the harness instrumented.
 
-# My role
-
-Sole builder: conversation architecture, prompt and personality design, and the interface.
+[Read the story on filbezerianos.com →](https://filbezerianos.com/portfolio/agents-duo/)

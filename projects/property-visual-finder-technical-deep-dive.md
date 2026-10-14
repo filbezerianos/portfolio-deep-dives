@@ -1,6 +1,10 @@
 # Property Visual Finder: Technical Deep Dive
 
-> A computer-vision pipeline that reads property listing photos, answers structured questions about each image, and aggregates the answers into per-property visual feature scores (such as natural light, large windows, high ceilings, carpets, fireplaces, photo quality) that can be filtered and sorted. **Source code is private.** This page documents the architecture and design decisions. [Business context, problem and results on filbezerianos.com](https://filbezerianos.com/portfolio/ai-powered-property-photo-analyser/) · [Solution overview (PDF)](https://filbezerianos.com/documents/ai-powered-property-photo-analyser/Property-Visual-Finder-Overview-English.pdf)
+My goal was to build an application that reads the photos in a property listing the way a renter does, and turn what it sees into something you can filter and rank on. The design asks a vision model a fixed set of closed questions about every image ("is there natural light?", "does the room have a fireplace?"). It turns each answer into a score that includes how certain the model was, then aggregates the scores per property, with the number of photos behind each one. Code does the gating, scoring and ranking; the model only answers questions about images. It has analysed 330k+ images and is integrated into the internal system of a UK real estate agency, where agents report spending 17% less time on properties that don't meet their clients' criteria.
+
+**My role:** Product Manager and AI/Technical Lead. I designed the feature taxonomy, the question set, the certainty and scoring logic and the evaluation tooling, and led two engineers on implementation.
+
+> **Source code is private.** This page documents the architecture and the decisions behind it. [Business context, problem and results on filbezerianos.com](https://filbezerianos.com/portfolio/ai-powered-property-photo-analyser/) · [Solution overview (PDF)](https://filbezerianos.com/documents/ai-powered-property-photo-analyser/Property-Visual-Finder-Overview-English.pdf)
 
 ![Python](https://img.shields.io/badge/Python-blue) ![HuggingFace](https://img.shields.io/badge/Hugging%20Face-yellow) ![SQLite](https://img.shields.io/badge/SQLite-003B57) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![Playwright](https://img.shields.io/badge/Playwright-2EAD33)
 
@@ -53,7 +57,7 @@ Images are stored **by URL, not copied**. They are fetched at inference time, so
 
 # Turning photos into signals: question-driven VQA
 
-Instead of one generic "describe this image" prompt, the system asks a **fixed, curated set of closed questions** per image. Each question maps to a feature and to the answer that counts as "good" for that feature. For example:
+I chose a **fixed, curated set of closed questions** per image over one generic "describe this image" prompt. Each question maps to a feature and to the answer that counts as "good" for that feature. For example:
 
 | Question | Feature |
 |---|---|
@@ -72,6 +76,7 @@ Design choices:
 - **Idempotent and resumable.** Images already answered are skipped, so the pipeline runs incrementally as new listings arrive.
 
 ## Parallel execution with an integrity gate
+
 Inference is the bottleneck, so each question can be run as its own process (`--questionkey question_N`), writing to its own CSV. A merge step then imports results **only for images answered for every question** (an inner join across all 11 outputs), and aborts if row counts disagree. This guarantees downstream scoring never sees an image with a partial feature profile.
 
 # Uncertainty-aware answers
@@ -112,7 +117,7 @@ Per property, the system computes:
 | **Bedroom coverage** | Confident bedroom photos ≥ number of bedrooms |
 | No-data sentinel | `-1` when no qualifying photo exists, so "unknown" is never confused with "bad" |
 
-Storing the **evidence count next to each score** is deliberate. A score based on 1 photo and one based on 12 should not rank the same.
+I store the **evidence count next to each score** on purpose. A score based on 1 photo and one based on 12 should not rank the same.
 
 # Keeping the index fresh
 
@@ -125,12 +130,14 @@ Listings disappear, and stale results destroy trust. A lifecycle tracker:
 # Model operations
 
 ## Performance dashboard
+
 A Streamlit dashboard buckets every answer for a chosen question into five confidence bands (very low → very high) and shows the **distribution of answers inside each band**. This was the main tool for:
 - finding questions where the model is systematically unsure (e.g. subjective ones such as "overprocessed");
 - choosing the gating thresholds above from data instead of guesswork;
 - spotting label drift when the question wording or model changes.
 
 ## Labelling portal
+
 An internal Streamlit tool shows sampled images in an editable grid with per-question dropdowns (inside/outside, room type, natural light, fireplace, bathtub vs. shower and so on), producing a **human-labelled dataset** for fine-tuning and evaluation. A dataset creator samples random images from the corpus.
 
 # Engineering trade-offs
@@ -143,14 +150,10 @@ An internal Streamlit tool shows sampled images in an editable grid with per-que
 | Batch pipeline, not live inference | Search stays fast; GPU cost is amortised | Scores lag behind new listings |
 | Scores + evidence counts | Honest ranking under uncertainty | More complex to explain in the UI |
 
-# Results
+# What came next
 
-- **330k+ images analysed** across UK listings.
-- Integrated into the internal system of a UK real estate agency. Agents report a **17% reduction in time spent on properties that don't meet clients' criteria**.
-- Unplanned outcome: agents used the visual assessments as a shared vocabulary for briefing clients.
+Property Visual Finder is integrated into the internal system of a UK real estate agency, where agents report a **17% reduction in time spent on properties that don't meet their clients' criteria**, with **330k+ images analysed** across UK listings.
 
-Details: [website case study](https://filbezerianos.com/portfolio/ai-powered-property-photo-analyser/).
+One result I did not plan: agents began using the visual assessments as a shared vocabulary for briefing clients. It emerged from real use, not from a designed feature.
 
-# My role
-
-Product Manager and AI/Technical Lead. I designed the feature taxonomy, the question set, the certainty and scoring logic, and the evaluation tooling, and led two engineers on implementation.
+[Read the business case study on filbezerianos.com →](https://filbezerianos.com/portfolio/ai-powered-property-photo-analyser/)

@@ -1,6 +1,12 @@
 # AI Cloud Migrator: Technical Deep Dive
 
-> A hybrid rules and LLM decision engine that recommends a cloud migration strategy (the "7 Rs") for each application, then scores effort, value and priority. **Source code is private.** This page documents the architecture and design decisions. [Business context, problem and results on filbezerianos.com](https://filbezerianos.com/portfolio/cloud-migration-strategy-ai-tool/)
+I built this to answer one question: can an AI make a trustworthy migration recommendation for every application in an estate, fast enough that the assessment phase stops being a cost clients resist?
+
+The answer was a hybrid. Deterministic rules decide everything that has a clear answer. A small, tightly constrained language model handles the judgement that depends on the organisation's goals. A scoring layer, again plain code, turns each recommendation into effort, value and a priority, so a team knows what to migrate first. It is in active use with a group of consulting organisations, and initial deployments show a much shorter assessment phase.
+
+**My role:** Product Manager and AI/Technical Lead. I designed the decision logic, the prompt and validation strategy and the scoring model, and led the engineer and the cloud architect who built it and tested it with consulting partners.
+
+> **Source code is private.** This page documents the architecture and the decisions behind it. [Business context, problem and results on filbezerianos.com](https://filbezerianos.com/portfolio/cloud-migration-strategy-ai-tool/)
 
 ![Python](https://img.shields.io/badge/Python-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![Pydantic](https://img.shields.io/badge/Pydantic-e92063) ![HuggingFace](https://img.shields.io/badge/Hugging%20Face-yellow) ![LLM](https://img.shields.io/badge/LLM-gpt--oss-green) ![LLM](https://img.shields.io/badge/LLM-Llama-green)
 
@@ -45,14 +51,13 @@ flowchart LR
 
 # The core idea: a hybrid decision engine
 
-Not every application needs an LLM. The engine runs **ordered deterministic rules first** and only calls the model when no rule decides the outcome.
+Not every application needs a language model. The engine runs **ordered deterministic rules first** and only calls the model when no rule decides the outcome.
 
-Why this matters:
 - **Predictability.** Cases with a clear answer are decided the same way every time, with no model variance.
 - **Cost and latency.** Some applications never reach the model, so they use no inference time.
-- **Smaller LLM job.** The model chooses between three strategies instead of seven, which makes a small model (8B–20B parameters) viable.
+- **A smaller job for the model.** It chooses between three strategies instead of the full set, which makes a small model (8B to 20B parameters) viable.
 
-# Making the LLM behave
+# Making the model behave
 
 ## Policy encoded in the prompt
 
@@ -77,9 +82,11 @@ class inference_json_response(BaseModel):
 ```
 
 - Output is parsed with `json.loads` and then validated by Pydantic. Any enum violation, missing key or malformed JSON returns `None`.
-- A `None` becomes an explicit **`Error` state** with zero scores. The application is flagged and, importantly, **no usage credit is consumed**, so a model failure never costs the customer.
+- A `None` becomes an explicit **`Error` state** with zero scores. The application is flagged and **no usage credit is consumed**, so a model failure never costs the customer. I made that a product decision on purpose: trust in the tool depends on it never charging for a bad answer.
+- Every recommendation carries a written reason for the strategy and for the complexity, so a consultant can challenge the output instead of just accepting it.
 
 ## Swappable inference backend
+
 A single config flag (`MODE_OF_OPERATION`) switches between a **local model** (data stays on the machine, useful for sensitive application inventories) and a **hosted model**. Both sit behind one `MODEL_INFERENCE()` function with the same prompt and validation path.
 
 # Scoring: turning a recommendation into a prioritised plan
@@ -105,9 +112,7 @@ total_effort  = mean(effort, time, cost)
 priority      = (1 − total_effort + value) / 2
 ```
 
-Scores are banded into **Low / Low to Medium / Medium / Medium to High / High**.
-
-All multipliers live in one config module, so a consultancy can recalibrate the scoring to its own estimation model without touching the logic.
+Scores are banded into **Low / Low to Medium / Medium / Medium to High / High**. All multipliers live in one config module, so a consultancy can recalibrate the scoring to its own estimation model without touching the logic. The scores are heuristic and comparable across an estate; they are not costed estimates.
 
 # Bulk assessment pipeline
 
@@ -122,7 +127,7 @@ Consultants assess a whole estate at once from a CSV template.
 
 - Each user has an isolated profile (organisation goals and strategy, cloud providers, credits) and an isolated application portfolio.
 - Credit accounting separates `application_credits` from `credits_used`, which makes a freemium or pilot model easy to run.
-- Sessions use signed cookies with `single_session=True`, and every page guards on authentication state.
+- Sessions use signed cookies, and every page guards on authentication state.
 
 # Engineering trade-offs
 
@@ -134,11 +139,8 @@ Consultants assess a whole estate at once from a CSV template.
 | File-based storage first | Fast to build and run in a pilot | Needs a database to scale (see roadmap) |
 | Streamlit | Very fast iteration with consultants | Limited concurrency and control over UI state |
 
-# Results
+# What came next
 
-Reported from pilot deployments with consulting partners: **~60% reduction in assessment-phase duration** and **~50% reduction in resource demand**.
-Details and context: [website case study](https://filbezerianos.com/portfolio/cloud-migration-strategy-ai-tool/).
+AI Cloud Migrator is in active use with a group of consulting organisations, integrated into their assessment workflows. Initial deployments show a **60% reduction in assessment-phase duration** and a **50% reduction in resource demand**, time and cost that goes back into the engagement.
 
-# My role
-
-Product Manager and AI/Technical Lead. I designed the decision logic, prompt and validation strategy, and scoring model, and led the engineer and cloud architect who built and validated it with consulting partners.
+[Read the business case study on filbezerianos.com →](https://filbezerianos.com/portfolio/cloud-migration-strategy-ai-tool/)

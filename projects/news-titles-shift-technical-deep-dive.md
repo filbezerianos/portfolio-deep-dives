@@ -1,6 +1,10 @@
 # News Titles Shift: Technical Deep Dive
 
-> A local-first experiment that rewrites live news headlines for a specific reader profile, then shows exactly how it did it. Each headline comes back in three versions (manipulated, original and neutral) plus a breakdown of the persuasion techniques used, each traced to a signal in the reader's profile. **Source code is private.** This page documents the architecture and design decisions. [The idea, the build and the findings on filbezerianos.com](https://filbezerianos.com/portfolio/news-titles-shift/)
+This is a local-first experiment. It takes live news headlines, rewrites each one for a reader profile, and shows exactly how it did it. Every headline comes back in three versions (manipulated, original and neutral), plus a breakdown of the persuasion techniques used, each traced to a signal in the reader's profile. The point was never a better clickbait engine. It was to make the clickbait engine legible.
+
+**My role:** sole builder. I designed the profile framework, wrote the prompts, built the application architecture and the interface.
+
+> **Source code is private.** This page documents the architecture and the decisions behind it. [The idea, the build and the findings on filbezerianos.com](https://filbezerianos.com/portfolio/news-titles-shift/)
 
 ![Python](https://img.shields.io/badge/Python-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![Ollama](https://img.shields.io/badge/Ollama-purple) ![LLM](https://img.shields.io/badge/LLM-Gemma-green)
 
@@ -12,6 +16,15 @@ Headline optimisation is usually invisible: a platform decides how to frame a st
 2. Personalise them against a **structured psychological profile**;
 3. Return **explainable** output: what changed, which technique was used, and which profile signal triggered it;
 4. Do it **without any sensitive data leaving the machine**.
+
+# Responsible design
+
+This is a dual-use demonstration, so I made the guardrails part of the architecture, not an afterthought:
+
+- **Factual accuracy is a constraint.** Manipulated titles may reframe, not fabricate: no invented claims or statistics.
+- **Output is always explained.** There is no mode that produces the manipulated headline without the breakdown.
+- **A closed technique vocabulary.** Techniques are named and defined, so the output teaches recognition.
+- **The purpose is education.** The tool exists to make the practice visible. I have deliberately not published the full prompt.
 
 # Architecture
 
@@ -63,6 +76,7 @@ The framework went through several iterations before settling, balancing psychol
 # The rewriting engine
 
 ## One structured call per headline
+
 Each headline is sent to the local model with the system prompt and the full profile. The response is constrained by a JSON schema and returns:
 
 ```json
@@ -79,7 +93,9 @@ Each headline is sent to the local model with the system prompt and the full pro
 Producing the manipulated version, the neutral baseline and the explanation **in the same call** means all three are consistent with each other, and the neutral version serves as a built-in control for comparison.
 
 ## Prompt architecture
+
 The system prompt is organised into explicit sections:
+
 - **Task:** the three required outputs;
 - **Signal map:** which profile field informs which kind of decision;
 - **Closed technique taxonomy:** eight named techniques, each with a one-line definition, and an instruction to use only those names;
@@ -87,23 +103,12 @@ The system prompt is organised into explicit sections:
 - **Output contract:** structure and strict-JSON rules.
 
 ## Selectivity is the hard part
+
 A model that applies every technique to every headline produces output that reads as *unhinged* rather than *targeted*. The prompt therefore requires that a technique be used **only when a specific profile signal triggers it**, and that the signal be named in the output. This keeps rewrites plausible and makes each technique auditable. Getting this to hold across different headline types and profile combinations took the most iteration.
 
 ## Traceability by construction
+
 `profile_signal` is a required field on every technique. The model has to say *why* it chose a technique for this reader, which turns a black-box rewrite into something a person can check against their own answers.
-
-# Prompt evolution
-
-The prompt went through a deliberate redesign:
-
-| Version | Stance | Output |
-|---|---|---|
-| v1 | "Personalise the headline for click likelihood": utility-first rules (be concrete, match tone to mood, don't manufacture anxiety), with explicit restraint | One rewritten title |
-| v2 | Name the persuasion techniques explicitly, require a neutral baseline, and require every technique to be explained and traced to a profile signal | Manipulated + neutral + technique breakdown |
-
-The shift from "a better rewrite" to **"a rewrite plus its own explanation"** is what turns the tool from a headline rewriter into something a reader can learn from.
-
-An earlier iteration also used an agent framework with a separate "reader agent" to judge click likelihood. It was removed in favour of a **single schema-constrained call**: fewer moving parts, lower latency and more predictable behaviour on a small local model.
 
 # The transparency layer
 
@@ -119,13 +124,26 @@ The profile contains genuinely sensitive psychological data (political leaning, 
 - the only outbound request is the **news search query**;
 - the profile is a local file the user controls.
 
-# Responsible design
+# How the prompt evolved
 
-This is a dual-use demonstration, so the guardrails are part of the architecture:
-- **Factual accuracy is a hard constraint.** Manipulated titles may reframe, not fabricate; no invented claims or statistics.
-- **Output is always explained.** There is no mode that produces the manipulated headline without the breakdown.
-- **Closed technique vocabulary.** Techniques are named and defined, so the output teaches recognition.
-- **Purpose is education.** The tool exists to make the practice visible. The full prompt is intentionally not published.
+The prompt went through a deliberate redesign:
+
+| Version | Stance | Output |
+|---|---|---|
+| v1 | "Personalise the headline for click likelihood": utility-first rules (be concrete, match tone to mood, don't manufacture anxiety), with explicit restraint | One rewritten title |
+| v2 | Name the persuasion techniques explicitly, require a neutral baseline, and require every technique to be explained and traced to a profile signal | Manipulated + neutral + technique breakdown |
+
+The shift from "a better rewrite" to **"a rewrite plus its own explanation"** is what turns the tool from a headline rewriter into something a reader can learn from.
+
+An earlier iteration also used an agent framework with a separate "reader agent" to judge click likelihood. It was removed in favour of a **single schema-constrained call**: fewer moving parts, lower latency and more predictable behaviour on a small local model.
+
+# What the experiment showed
+
+Within that limit, three things stood out:
+
+- Manipulated headlines generated a stronger click impulse than the original or the neutral rewrite, most strongly for profiles with **high emotional reactivity and low institutional trust**.
+- The same headline was rewritten in **entirely different directions** for different profiles.
+- **Outrage priming** and **in-group threat** were the most frequently triggered techniques across profiles regardless of political leaning. What differed was who was threatened and what the outrage targeted; the mechanism was the same.
 
 # Engineering trade-offs
 
@@ -137,16 +155,8 @@ This is a dual-use demonstration, so the guardrails are part of the architecture
 | Live news, 5 results | Real, current headlines | Sequential local inference makes a search feel slow |
 | Profile as readable JSON | Easy to inspect and debug | No numeric weighting of signals |
 
-# What the experiment showed
+# What came next
 
-From testing across multiple reader profiles and topics: `[CONFIRM: method, number of profiles, number of headlines, and who/what judged "click impulse"]`
+News Titles Shift stayed an experiment, and I meant it to. It turned a technical question into a working demonstration of a practice that already happens at scale, mostly without transparency and without the reader's knowledge. The design carries over to anything where a model's reasoning needs to be visible to the person it affects.
 
-- Manipulated headlines generated a stronger click impulse than the original or the neutral rewrite, most strongly for profiles with **high emotional reactivity and low institutional trust**.
-- The same headline was rewritten in **entirely different directions** for different profiles.
-- **Outrage priming** and **in-group threat** were the most frequently triggered techniques across profiles regardless of political leaning. What differed was who was threatened and what the outrage targeted; the mechanism was the same.
-
-Full narrative: [website case study](https://filbezerianos.com/portfolio/news-titles-shift/).
-
-# My role
-
-Sole builder: profile framework design, prompt engineering, application architecture and interface.
+[Read the story on filbezerianos.com →](https://filbezerianos.com/portfolio/news-titles-shift/)

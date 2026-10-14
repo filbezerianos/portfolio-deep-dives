@@ -1,6 +1,10 @@
 # Relationships Mapping Visualiser: Technical Deep Dive
 
-> Turns unstructured interview notes into an editable diagram of how teams, people and tools interact. An LLM extracts structured relationships from free text, strict validation turns them into a table, and the diagram is generated **deterministically** from that table, so a consultant can correct any mistake in seconds. **Source code is private.** This page documents the architecture and design decisions. [The problem, the solution and results on filbezerianos.com](https://filbezerianos.com/portfolio/relationships-mapping-and-visualisation-tool/)
+My goal was to use AI to turn messy interview notes into a diagram a consultant trusts, and make fixing its mistakes faster than drawing the diagram by hand. The design keeps the language model to the one job it is good at. It reads free text and extracts relationships in a strict line format. Code validates every line, builds a table, and draws the diagram from that table. A consultant can correct any mistake in the table in seconds, and the diagram follows. It is used by consultants in live engagements, and initial deployments show an 80% reduction in the time spent creating the diagram.
+
+**My role:** sole builder. I did the AI integration and prompt engineering, the validation logic, the diagram rendering and the editing interface, working closely with the consultants who use it.
+
+> **Source code is private.** This page documents the architecture and the decisions behind it. [The problem, the solution and results on filbezerianos.com](https://filbezerianos.com/portfolio/relationships-mapping-and-visualisation-tool/)
 
 ![Python](https://img.shields.io/badge/Python-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![Mermaid](https://img.shields.io/badge/Mermaid-ff3670) ![LLM](https://img.shields.io/badge/LLM-Gemma-green)
 
@@ -58,6 +62,7 @@ Why a line grammar:
 - it maps one-to-one to a table row: *Entity A, Interaction, Entity B, Reason*.
 
 ## Prompt design
+
 The system prompt encodes the rules that matter for diagram quality:
 
 - **Grounding:** entities must be copied *exactly* as written in the notes; the model may not shorten, rename or invent them.
@@ -68,9 +73,11 @@ The system prompt encodes the rules that matter for diagram quality:
 - **No commentary:** the output is the list and nothing else.
 
 ## Input hygiene
+
 Before the call, the uploaded text is sanitised: the characters `< > { } [ ]` are replaced, so text in the notes can never be confused with the output grammar's delimiters.
 
 ## Output validation
+
 The response is split into lines, and **only lines that match the full grammar are kept**:
 
 ```text
@@ -81,7 +88,7 @@ Preambles, stray commentary or half-formed lines are dropped instead of crashing
 
 # Deterministic diagram generation
 
-The LLM never writes the diagram. Code builds the Mermaid flowchart from the table:
+The model never writes the diagram. Code builds the Mermaid flowchart from the table:
 
 ```text
 flowchart LR
@@ -138,14 +145,10 @@ The app does not write interview content to disk. Notes, the extracted table and
 | Stateless sessions | Strong privacy | Nothing to resume; the user must export |
 | Small local model option | Confidentiality, no API cost | Lower recall than a frontier model |
 
-# Results
+# What came next
 
-Deployed in small and medium-sized organisations: `[CONFIRM: how measured, number of engagements]`
-- **80% reduction** in time spent creating the interactions diagram;
-- **15% reduction** in overall process assessment time.
+Used by consultants in live engagements, the tool has shortened how long the discovery-to-diagram process takes. Initial deployments in small and medium-sized organisations show an **80% reduction in the time spent creating the interactions diagram** and a **15% reduction in overall process assessment time**.
 
-Consultants use it in live engagements, which gives a continuous feedback loop. A questionnaire guide helps teams capture notes in the format the extractor handles best. Details: [website case study](https://filbezerianos.com/portfolio/relationships-mapping-and-visualisation-tool/).
+A questionnaire guide helps teams capture notes in the format the extractor handles best. Consultant feedback from live engagements keeps improving accuracy and the editor.
 
-# My role
-
-Sole builder: AI integration and prompt engineering, validation logic, diagram rendering and the editing interface, working closely with the consultants who use it.
+[Read the business case study on filbezerianos.com →](https://filbezerianos.com/portfolio/relationships-mapping-and-visualisation-tool/)
