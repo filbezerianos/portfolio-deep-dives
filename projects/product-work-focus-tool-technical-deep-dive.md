@@ -1,8 +1,14 @@
 # Product Work Focus Tool: Technical Deep Dive
 
-> An AI-assisted prioritisation tool that derives **strategy-specific prioritisation dimensions** from a product strategy document, assesses each work item against them with a written rationale, and converts the result into a **deterministic priority (P1–P4)** and an indicative delivery plan, with the Product Manager in control at every step. **Source code is private.** This page documents the architecture and design decisions. [Business context, problem and results on filbezerianos.com](https://filbezerianos.com/portfolio/product-work-focus-tool/)
+I built this to answer one question: can an AI help a Product Manager prioritise against *their* strategy, without giving up control of the answer?
 
-![Python](https://img.shields.io/badge/Python-3.x-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-1.54-red) ![LLM](https://img.shields.io/badge/LLM-Llama%203.1%208B%20(local)-green) ![Mermaid](https://img.shields.io/badge/Mermaid-Gantt-ff3670)
+The design splits the work. A local language model reads the strategy, proposes the prioritisation dimensions and assesses each item against them with a written rationale. Plain code then turns those judgements into a priority from P1 to P4, the same way every time. The Product Manager can edit every step. The ideas became the foundation of an AI product platform I built at work, which lets the team take on more products without growing in step.
+
+**My role:** Technical Lead and Product Manager. I designed the prioritisation framework, the prompt and schema strategy and the scoring model, and built the application.
+
+> **Source code is private.** This page documents the architecture and the decisions behind it. [Business context, problem and results on filbezerianos.com](https://filbezerianos.com/portfolio/product-work-focus-tool/)
+
+![Python](https://img.shields.io/badge/Python-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![LLM](https://img.shields.io/badge/LLM-Llama-green) ![Mermaid](https://img.shields.io/badge/Mermaid-ff3670)
 
 # The problem, in engineering terms
 
@@ -66,7 +72,7 @@ The uploaded PDF is turned into a **bounded, plain-text summary** (4,000-charact
 ## Generate exactly five dimensions
 The model proposes five dimensions (name plus a short description) under explicit constraints: aligned to the strategy, **distinct and non-overlapping**, assessable at feature level, and **not invented beyond the input**. Output is JSON-schema constrained, so the app never parses free text.
 
-The PM can **edit, rename or replace** any dimension and save. Generated dimensions are a starting point, not an answer.
+The Product Manager can **edit, rename or replace** any dimension and save. Generated dimensions are a starting point, not an answer.
 
 # Assessing an item: isolated, explainable judgements
 
@@ -116,19 +122,17 @@ Items are sorted by priority, then **impact (descending)**, then **effort (ascen
 
 **Worked example.** An item rated Direct, Direct, Indirect, No Impact, Indirect scores 2+2+1+0+1 = **6 → Medium**. With effort **Small**, the matrix gives **P2**.
 
-Because the scoring is a lookup table, the same ratings always produce the same priority, and the PM can see *exactly* why an item is P2. The model's rationale explains the *inputs*; the code explains the *output*.
+Because the scoring is a lookup table, the same ratings always produce the same priority, and the PM can see *exactly* why an item is P2.
 
 # Keeping the Product Manager in control
 
-| Control point | How |
-|---|---|
-| Strategy summary | Editable text, saved as the source of truth for all later calls |
-| Dimensions | Editable table; auto-regeneration is optional and explicit |
-| Item assessment | Every dimension value, with its rationale, is visible and can be adjusted |
-| Manual items | A separate entry path with the same scoring logic; items are flagged as manual vs. AI-assessed |
-| Effort | Always entered by a human, never inferred |
+The AI proposes, the Product Manager disposes, and every override flows through the same scoring code as AI output.
 
-The design principle: **the AI proposes, the PM disposes**, and every override flows through the same scoring code as AI output.
+- The **strategy summary** is editable text and the source of truth for all later calls.
+- The **dimensions** are an editable table, and regenerating them is optional and explicit.
+- Every **dimension rating and its rationale** is visible and can be adjusted.
+- **Manual items** use the same scoring logic and are flagged as manual rather than AI-assessed.
+- **Effort** is always entered by a person, never inferred.
 
 # From priorities to an indicative plan
 
@@ -151,13 +155,10 @@ It is deliberately an *indicative* plan: no dependencies, skills or per-person c
 | Equal-weight dimensions | Simple, transparent | PM can't yet say "growth matters twice as much" |
 | Flat-file storage | Fast to build and demo | Single user; no history or collaboration |
 
-# Results and what came next
+## What came next
 
-- Early testing with a select group of Product Managers: **up to 50% less time** to prioritise a feature and produce an initial delivery plan, and a process that felt **more defensible** because every assessment came with a rationale to discuss.
-- The ideas proven here (deriving dimensions from strategy, assessing work consistently, keeping the PM in control) became the foundation for the AI product platform I built at Kantar with Copilot Studio.
+Early testing with a select group of Product Managers showed up to **50% less time** to prioritise a feature and produce an initial delivery plan. Just as important, the process felt **more defensible**, because every assessment came with a rationale to discuss.
 
-Details: [website case study](https://filbezerianos.com/portfolio/product-work-focus-tool/).
+The tool stayed a prototype, but its ideas did not. Deriving the dimensions from the strategy, assessing work consistently and keeping the Product Manager in control carried into the AI product platform I built at work on Copilot Studio. The stack is different; the design is the same.
 
-# My role
-
-Technical Lead and Product Manager. I designed the prioritisation framework, the prompt and schema strategy, and the scoring model, and built the application.
+[Read the business case study on filbezerianos.com →](https://filbezerianos.com/portfolio/product-work-focus-tool/)

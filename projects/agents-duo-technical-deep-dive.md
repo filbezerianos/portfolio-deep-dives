@@ -2,7 +2,7 @@
 
 > A local-first experiment in which two language models hold an open-ended conversation with each other. Each agent has a configurable personality, and no human steers the dialogue after the setup. A live monitor shows per-turn latency, token usage and effective temperature, and every conversation is saved for replay. **Source code is private.** This page documents the architecture and design decisions. [The idea and what I observed on filbezerianos.com](https://filbezerianos.com/portfolio/agents-duo/)
 
-![Python](https://img.shields.io/badge/Python-3.x-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-1.54-red) ![OpenAI SDK](https://img.shields.io/badge/OpenAI%20SDK-compatible%20API-lightgrey) ![LM Studio](https://img.shields.io/badge/LM%20Studio-local%20inference-purple)
+![Python](https://img.shields.io/badge/Python-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![LM Studio](https://img.shields.io/badge/LM%20Studio-purple) ![LLM](https://img.shields.io/badge/LLM-Llama-green) ![LLM](https://img.shields.io/badge/LLM-Gemma-green)
 
 # What this is, in engineering terms
 

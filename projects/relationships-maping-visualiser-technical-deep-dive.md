@@ -2,7 +2,7 @@
 
 > Turns unstructured interview notes into an editable diagram of how teams, people and tools interact. An LLM extracts structured relationships from free text, strict validation turns them into a table, and the diagram is generated **deterministically** from that table, so a consultant can correct any mistake in seconds. **Source code is private.** This page documents the architecture and design decisions. [The problem, the solution and results on filbezerianos.com](https://filbezerianos.com/portfolio/relationships-mapping-and-visualisation-tool/)
 
-![Python](https://img.shields.io/badge/Python-3.x-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-1.54-red) ![Mermaid](https://img.shields.io/badge/Mermaid-flowchart-ff3670) ![LLM](https://img.shields.io/badge/LLM-Llama%203.1%208B%20%7C%20Gemma%203%204B-green)
+![Python](https://img.shields.io/badge/Python-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![Mermaid](https://img.shields.io/badge/Mermaid-ff3670) ![LLM](https://img.shields.io/badge/LLM-Gemma-green)
 
 # The problem, in engineering terms
 

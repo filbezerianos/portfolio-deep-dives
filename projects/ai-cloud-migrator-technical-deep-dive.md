@@ -2,7 +2,7 @@
 
 > A hybrid rules and LLM decision engine that recommends a cloud migration strategy (the "7 Rs") for each application, then scores effort, value and priority. **Source code is private.** This page documents the architecture and design decisions. [Business context, problem and results on filbezerianos.com](https://filbezerianos.com/portfolio/cloud-migration-strategy-ai-tool/)
 
-![Python](https://img.shields.io/badge/Python-3.x-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![Pydantic](https://img.shields.io/badge/Pydantic-2.x-e92063) ![LLM](https://img.shields.io/badge/LLM-gpt--oss--20b%20%7C%20Llama--3.1--8B-green)
+![Python](https://img.shields.io/badge/Python-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![Pydantic](https://img.shields.io/badge/Pydantic-e92063) ![HuggingFace](https://img.shields.io/badge/Hugging%20Face-yellow) ![LLM](https://img.shields.io/badge/LLM-gpt--oss-green) ![LLM](https://img.shields.io/badge/LLM-Llama-green)
 
 
 # The problem, in engineering terms

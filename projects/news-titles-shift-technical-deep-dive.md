@@ -2,7 +2,7 @@
 
 > A local-first experiment that rewrites live news headlines for a specific reader profile, then shows exactly how it did it. Each headline comes back in three versions (manipulated, original and neutral) plus a breakdown of the persuasion techniques used, each traced to a signal in the reader's profile. **Source code is private.** This page documents the architecture and design decisions. [The idea, the build and the findings on filbezerianos.com](https://filbezerianos.com/portfolio/news-titles-shift/)
 
-![Python](https://img.shields.io/badge/Python-3.x-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-1.54-red) ![Ollama](https://img.shields.io/badge/Ollama-local%20LLM-black) ![Gemma](https://img.shields.io/badge/Model-Gemma%20(local)-4285F4)
+![Python](https://img.shields.io/badge/Python-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![Ollama](https://img.shields.io/badge/Ollama-purple) ![LLM](https://img.shields.io/badge/LLM-Gemma-green)
 
 # What this is, in engineering terms
 

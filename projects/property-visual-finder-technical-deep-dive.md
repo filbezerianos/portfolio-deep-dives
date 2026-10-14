@@ -2,7 +2,7 @@
 
 > A computer-vision pipeline that reads property listing photos, answers structured questions about each image, and aggregates the answers into per-property visual feature scores (such as natural light, large windows, high ceilings, carpets, fireplaces, photo quality) that can be filtered and sorted. **Source code is private.** This page documents the architecture and design decisions. [Business context, problem and results on filbezerianos.com](https://filbezerianos.com/portfolio/ai-powered-property-photo-analyser/) · [Solution overview (PDF)](https://filbezerianos.com/documents/ai-powered-property-photo-analyser/Property-Visual-Finder-Overview-English.pdf)
 
-![Python](https://img.shields.io/badge/Python-3.x-blue) ![PyTorch/Transformers](https://img.shields.io/badge/Hugging%20Face-Transformers-yellow) ![SQLite](https://img.shields.io/badge/SQLite-003B57) ![Streamlit](https://img.shields.io/badge/Streamlit-ff4b4b) ![Playwright](https://img.shields.io/badge/Playwright-2EAD33)
+![Python](https://img.shields.io/badge/Python-blue) ![HuggingFace](https://img.shields.io/badge/Hugging%20Face-yellow) ![SQLite](https://img.shields.io/badge/SQLite-003B57) ![Streamlit](https://img.shields.io/badge/Streamlit-red) ![Playwright](https://img.shields.io/badge/Playwright-2EAD33)
 
 # The problem, in engineering terms
 
