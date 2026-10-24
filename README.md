@@ -4,7 +4,7 @@ Technical deep dives into products I have designed and built. Each page explains
 
 I am a Product and Technology Leader who still builds. I keep building because it keeps my product decisions grounded in what is actually possible, not just what looks good on a roadmap. These pages are the engineering side of that work.
 
-> **The code is private.** These pages document design and engineering decisions, not source code.
+> These pages document design and engineering decisions, not source code.
 > For the business view of each project (the problem, the solution and the results), see my [portfolio](https://filbezerianos.com/portfolio/).
 
 # Projects
@@ -19,6 +19,7 @@ Some of these came from patterns I have seen in enterprise product work, others 
 | [**Property Visual Finder**](projects/property-visual-finder-technical-deep-dive.md) | Scores property listings from their photos so they can be filtered and ranked by visual features | Closed-question visual analysis, with certainty-aware aggregation across 330k+ images | Integrated into a UK agency's system. 17% less time on mismatched properties | Product Manager and AI/Technical Lead, leading two engineers |
 | [**News Titles Shift**](projects/news-titles-shift-technical-deep-dive.md) | Rewrites live headlines for a reader profile, then shows exactly how it did it | Make persuasion legible: manipulated, neutral and annotated versions side by side | An experiment. A working demonstration of personalised persuasion | Sole builder |
 | [**Agents Duo**](projects/agents-duo-technical-deep-dive.md) | Two language models hold an open-ended conversation with configurable personalities | A small, well-instrumented harness for studying model-to-model interaction | An experiment. Observations on style drift and self-directed topics | Sole builder |
+| [**AI Court Simulator**](https://github.com/filbezerianos/ai-court-simulator) | A courtroom game where you argue a fictional case before an AI judge, an AI opponent and a jury of twelve | Structured output from a local model, validated by schema, with the verdict decided by plain code that counts twelve independent votes | A personal project, open source. Playable end to end. Closing arguments are not built yet | Sole builder |
 
 # Principles I build by
 
